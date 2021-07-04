@@ -1,0 +1,4 @@
+.deploy_git
+.github
+.git
+node_modules
