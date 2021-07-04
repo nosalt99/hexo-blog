@@ -128,15 +128,15 @@ dark_mode:
 color:
   # body 背景色
   # Color of body background
-  body_bg_color: "#121421"
+  body_bg_color: "#0E1119"
   # 暗色模式下的 body 背景色，下同
   # Color in dark mode, the same below
-  body_bg_color_dark: "#121421"
+  body_bg_color_dark: "#0E1119"
 
   # 顶部菜单背景色
   # Color of navigation bar background
-  navbar_bg_color: "#121421"
-  navbar_bg_color_dark: "#121421"
+  navbar_bg_color: "#0E1119"
+  navbar_bg_color_dark: "#0E1119"
 
   # 顶部菜单字体色
   # Color of navigation bar text
