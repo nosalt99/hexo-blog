@@ -1,0 +1,522 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.jpg">
+  <link rel="icon" href="/img/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#0E1119">
+  <meta name="description" content="前端 Flutter Android 技术分享 &amp; 生活感悟">
+  <meta name="author" content="不咸">
+  <meta name="keywords" content="">
+  
+  <title>智能合约雏形 - 一点点都不咸</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.nosalt.cn","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":1280076014,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>不咸</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="智能合约雏形">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2019-11-02 10:30" pubdate>
+        2019年11月2日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      19
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">智能合约雏形</h1>
+            
+            <div class="markdown-body">
+              <p>大家都有转过账，每笔交易是这样的：张三账上减￥200，李四账上加￥200。<br>在比特币区块链中，交易不是这么简单，交易实际是通过脚本来完成，以承载更多的功能个，这也是为什么比特币被称为是一种 “可编程的货币”。<br>本文就来分析一下交易是如何实现可编程的。</p>
+<h2 id="未花费的交易输出-UTXO"><a href="#未花费的交易输出-UTXO" class="headerlink" title="未花费的交易输出 (UTXO)"></a>未花费的交易输出 (UTXO)</h2><p>先引入一个概念：未花费的交易输出 ——UTXO（Unspent Transaction Output）</p>
+<p>其实比特币的交易都是基于 UTXO 上的，即交易的输入是之前交易未花费的输出，这笔交易的输出可以被当做下一笔新交易的输入。</p>
+<blockquote>
+<p>挖矿奖励属于一个特殊的交易（称为 coinbase 交易），可以没有输入。<br>UTXO 是交易的基本单元，不能再分割。<br>在比特币没有余额概念，只有分散到区块链里的 UTXO</p>
+</blockquote>
+<p>随着钱从一个地址被移动到另一个地址的同时形成了一条所有权链，像这样：<br><img src="https://img.learnblockchain.cn/2017/own_chain.jpeg!wl" srcset="/img/loading.gif" lazyload alt="own_chain"></p>
+<h2 id="比特币脚本"><a href="#比特币脚本" class="headerlink" title="比特币脚本"></a>比特币脚本</h2><p>比特币交易是首先要提供一个用于解锁 UTXO（用私钥去匹配锁定脚本）的脚本（常称为解锁脚本：Signature script)，这也叫交易输入，<br>交易的输出则是指向一个脚本（称为锁定脚本：PubKey script），这个脚本表达了：谁的签名（签名是常见形式，并不一定必须是签名）能匹配这个输出地址，钱就支付给谁。</p>
+<p>每一个比特币节点会通过同时执行这解锁和锁定脚本（不是当前的锁定脚本，是指上一个交易的锁定脚本）来验证一笔交易，脚本组合结果为真，则为有效交易。</p>
+<blockquote>
+<p>当解锁版脚本与锁定版脚本的设定条件相匹配时，执行组合有效脚本时才会显示结果为真</p>
+</blockquote>
+<p>如最为常见类型的比特币交易脚本（支付到公钥哈希：P2PKH（Pay-to-Public-Key-Hash））组合是这样：<br><img src="https://img.learnblockchain.cn/2017/script.jpeg!wl" srcset="/img/loading.gif" lazyload alt="script"></p>
+<h3 id="常见交易脚本验证过程"><a href="#常见交易脚本验证过程" class="headerlink" title="常见交易脚本验证过程"></a>常见交易脚本验证过程</h3><p>比特币交易脚本语言是一种基于逆波兰表示法的基于栈的执行语言（不知道逆波兰和栈的同学去翻大学数据结构课本，你也可跳过这个部分）。</p>
+<blockquote>
+<p>比特币脚本语言包含基本算数计算、基本逻辑 (比如 if…then)、报错以及返回结果和一些加密指令，不支持循环。想了解更多语言细节可参考: <a target="_blank" rel="noopener" href="http://www.8btc.com/bitcoin_scripts">比特币脚本</a></p>
+</blockquote>
+<p>脚本语言通过从左至右地处理每个项目的方式执行脚本。</p>
+<p>下面用两个图说明下常见类型的比特币交易脚本验证执行过程：<br><img src="https://img.learnblockchain.cn/2017/script_run1.jpeg!wl" srcset="/img/loading.gif" lazyload alt="script_run1"><br>上图为解锁脚本运行过程（主要是入栈）<br><img src="https://img.learnblockchain.cn/2017/script_run2.jpeg!wl" srcset="/img/loading.gif" lazyload alt="script_run2"><br>上图为锁定脚本运行过程（主要是出栈），最后的结果为真，说明交易有效。</p>
+<h2 id="交易分析"><a href="#交易分析" class="headerlink" title="交易分析"></a>交易分析</h2><p>实际上比特币的交易被设计为可以纳入多个输入和输出。</p>
+<h3 id="交易结构"><a href="#交易结构" class="headerlink" title="交易结构"></a>交易结构</h3><p>我们来看看完整的交易结构，<br><img src="https://img.learnblockchain.cn/2017/tx_struce.jpeg!wl" srcset="/img/loading.gif" lazyload alt="img"></p>
+<blockquote>
+<p>交易的锁定时间定义了能被加到区块链里的最早的交易时间。在大多数交易里，它被设置成 0，用来表示立即执行。<br>如果锁定时间不是 0 并且小于 5 亿，就被视为区块高度，意指在这个指定的区块高度之前，该交易不会被包含在区块链里。<br>如果锁定时间大于 5 亿，则它被当作是一个 Unix 纪元时间戳（从 1970 年 1 月 1 日以来的秒数），并且在这个指定时间之前，该交易不会被包含在区块链里。</p>
+</blockquote>
+<p>交易的数据结构没有交易费的字段，交易费通过所有输入的总和，以及所有输出的总和之间的差来表示，即：</p>
+<blockquote>
+<p>交易费 = 求和（所有输入） - 求和（所有输出）</p>
+</blockquote>
+<h3 id="交易输入结构"><a href="#交易输入结构" class="headerlink" title="交易输入结构"></a>交易输入结构</h3><p>刚刚我们提过输入需要提供一个解锁脚本，现在来看看一个交易的输入结构：<br><img src="https://img.learnblockchain.cn/2017/tx_input_struce.jpeg!wl" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>我们结合整个交易的结构里看输入结构就是这样子：<br><img src="https://img.learnblockchain.cn/2017/tx_input_overview.jpeg!wl" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="交易输出结构"><a href="#交易输出结构" class="headerlink" title="交易输出结构"></a>交易输出结构</h3><p>刚刚我们提过输出是指向一个解锁脚本，具体交易的输出结构为：<br><img src="https://img.learnblockchain.cn/2017/tx_output_struce.jpeg!wl" srcset="/img/loading.gif" lazyload alt="img"><br>我们结合整个交易的结构里看输出结构就是这样子：<br><img src="https://img.learnblockchain.cn/2017/tx_output_overview.jpeg!wl" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="交易哈希计算"><a href="#交易哈希计算" class="headerlink" title="交易哈希计算"></a>交易哈希计算</h3><p>在<a target="_blank" rel="noopener" href="https://xiaozhuanlan.com/topic/1402935768">比特币区块结构 Merkle 树及简单支付验证分析</a> 讲到区块结构，区块结构包含多个交易的哈希。<br>那么交易哈希是怎么计算的呢？</p>
+<ol>
+<li>交易结构各字段序列化为字节数组</li>
+<li>把字节数组拼接为支付串</li>
+<li>对支付串计算两次 SHA256 得到交易 hash</li>
+</ol>
+<p>了解详情可进一步参考<a target="_blank" rel="noopener" href="https://bitcoin.stackexchange.com/questions/2859/how-are-transaction-hashes-calculated">如何计算交易 Hash?</a> 及<a target="_blank" rel="noopener" href="https://bitcointalk.org/index.php?topic=54451.msg649253#msg649253">如何创建 Hash?</a></p>
+<p>现在是不是对完整的交易到区块有了更清晰的认识。</p>
+<h2 id="智能合约雏形-应用场景说明"><a href="#智能合约雏形-应用场景说明" class="headerlink" title="智能合约雏形 - 应用场景说明"></a>智能合约雏形 - 应用场景说明</h2><p>由于交易是通过脚本来实现，脚本语言可以表达出无数的条件变种。</p>
+<p>比特币的脚本目前常用的主要分为两种，一种是常见的 P2PKH（支付给公钥哈希），另一种是 P2SH（Pay-to-Script-Hash 支付脚本哈希）。<br>P2SH 支付中，锁定脚本被密码学哈希所取代，当一笔交易试图支付 UTXO 时，要解锁支付脚本，它必须含有与哈希相匹配的脚本。</p>
+<p>这里不展开技术细节，下面说明一些应用场景，以便大家有更直观的认识。</p>
+<ul>
+<li><p>多重签名应用<br>合伙经营中，如只有一半以上的的股东同意签名就可以进行支付，可为公司治理提供管控便利，同时也能有效防范盗窃、挪用和遗失。</p>
+<p>用于担保和争端调解，一个买家想和他不认识或不信任的某人交易，在一般情况交易正常进行时，买家不想任何第三方参与。那交易双方可以发起支付，但如果交易出现问题时，那第三方就可以根据裁定，使用自己的签名和裁定认可的一方共同签名来兑现这笔交易。</p>
+</li>
+<li><p>保证合同<br>保证合同是建造公众商品时的集资办法，公众商品是指一旦建成，任何人都可以免费享受到好处。标准的例子是灯塔，所有人都认同应该建造一个，但是对于个人航海者来说灯塔太贵了，灯塔同时也会方便其他航海者。<br>一个解决方案是向所有人集资，只有当筹集的资金超过所需的建造成本时，每个人才真正付钱，如果集资款不足，则谁都不用付钱。</p>
+</li>
+<li><p>依靠预言<br>假如老人想让他孙子继承遗产，继承时间是在他死后或者在孙子年满 18 岁时（也是一个带锁定时间交易），无论哪个条件先满足，他的孙子都可以得到遗产。<br>因为比特币节点可依靠预言对死亡条件进行判断，预言是指具有密钥对的服务器，当用户自定义的表达式被证明是真的，它能按照要求对交易签名。</p>
+</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/block-chain/">block chain</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%AF%94%E7%89%B9%E5%B8%81/">比特币</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/">智能合约</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/11/02/block_chain/%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%98%AF%E4%BB%80%E4%B9%88/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">以太坊是什么</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/11/02/block_chain/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%81%B5%E5%AE%88%E5%8D%8F%E8%AE%AE/">
+                        <span class="hidden-mobile">为什么要遵守协议</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="twikoo"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/twikoo@1.3.1/dist/twikoo.all.min.js', function() {
+        var options = Object.assign(
+          {"envId":"stockbacken-4greka6u605b204e","region":"ap-guangzhou","path":"window.location.pathname"},
+          {
+            el: '#twikoo',
+            path: 'window.location.pathname'
+          }
+        )
+        twikoo.init(options)
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+    <!-- cnzz Analytics Icon -->
+    <span id="cnzz_stat_icon_1280076014" style="display: none"></span>
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.jpg">
+  <link rel="icon" href="/img/favicon.jpg">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#0E1119">
+  <meta name="description" content="前端 Flutter Android 技术分享 &amp; 生活感悟">
+  <meta name="author" content="不咸">
+  <meta name="keywords" content="">
+  
+  <title>ReactNative-Java与JavaScript之间的通信 - 一点点都不咸</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.7.2/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.nosalt.cn","root":"/","version":"1.8.11","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":1280076014,"leancloud":{"app_id":null,"app_key":null,"server_url":null}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>不咸</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/background.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="ReactNative-Java与JavaScript之间的通信">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-12-09 09:30" pubdate>
+        2018年12月9日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      764 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      11
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">ReactNative-Java与JavaScript之间的通信</h1>
+            
+            <div class="markdown-body">
+              <h1 id="ReactNative-Java与JavaScript之间的通信"><a href="#ReactNative-Java与JavaScript之间的通信" class="headerlink" title="ReactNative-Java与JavaScript之间的通信"></a>ReactNative-Java与JavaScript之间的通信</h1><h2 id="几个重要的类"><a href="#几个重要的类" class="headerlink" title="几个重要的类"></a>几个重要的类</h2><ul>
+<li><p>Java层 ReactContext(ReactApplicationContext)： React Native 封装后的 Android Context，通过其访问设置 RN 包装起来的核心类实现等；</p>
+</li>
+<li><p>Java层 ReactInstanceManager(ReactInstanceManagerImpl)： RN对 Android 层暴露的大内总管，负责掌管 CatalystInstanceImpl 实例、ReactRootView、Activity 生命周期等；</p>
+</li>
+<li><p>Java/C++层 CatalystInstance(CatalystInstanceImpl)： RN Java、C++、JS通信总舵主，统管 JS、Java 核心 Module 映射表、回调等等，三端入口与桥梁；</p>
+</li>
+<li><p>C++层 NativeToJsBridge： Java 调用 JS 的桥梁，用来调用 JS Module、回调 Java（通过JsToNativeBridge）等；</p>
+</li>
+<li><p>C++层 JsToNativeBridge： JS 调用 Java 的桥梁，用来调用 Java Module等；</p>
+</li>
+<li><p>C++层 JSCExecutor： 掌管 Webkit 的 JavaScriptCore，JS 与 C++ 的转换桥接都在这里中转处理；</p>
+</li>
+<li><p>JS层 MessageQueue： 队列栈，用来处理 JS 的调用队列、调用 Java 或者 JS Module 的方法、处理回调、管理 JS Module 等；</p>
+</li>
+<li><p>多层 JavaScriptModule/BaseJavaModule(NativeModule)： 双端字典映射表中的模块，负责 Java/JS 到彼此的映射调用格式申明，由 CatalystInstance 统管；</p>
+</li>
+</ul>
+<h2 id="Java调用JavaScript"><a href="#Java调用JavaScript" class="headerlink" title="Java调用JavaScript"></a>Java调用JavaScript</h2><p><img src="https://cdn.nlark.com/yuque/0/2018/png/199077/1543751641173-8a70a3ba-ff6e-41af-bbfc-3bc04fc848d2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">JSCExecutor::callFunction</span><span class="hljs-params">(<span class="hljs-keyword">const</span> std::string&amp; moduleId, <span class="hljs-keyword">const</span> std::string&amp; methodId, <span class="hljs-keyword">const</span> folly::dynamic&amp; arguments)</span> </span>&#123;<br>  ......<br>  <span class="hljs-keyword">auto</span> result = [&amp;] &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">//m_callFunctionReturnFlushedQueueJS来自于JSCExecutor::bindBridge()方法中初始化，JSCExecutor::bindBridge()是在前面分析启动流程时被调用的，实质是负责通过 Webkit JSC 拿到 JS 端代码的相关对象和方法引用，譬如拿到 JS 端 BatchedBridge.js 的 __fbBatchedBridge 属性与 MessageQueue.js 的 callFunctionReturnFlushedQueue 方法引用。此处实质为调用 MessageQueue.js 的 callFunctionReturnFlushedQueue 方法。</span><br>      <span class="hljs-keyword">return</span> m_callFunctionReturnFlushedQueueJS-&gt;<span class="hljs-built_in">callAsFunction</span>(&#123;<br>        <span class="hljs-built_in">Value</span>(m_context, String::<span class="hljs-built_in">createExpectingAscii</span>(moduleId)),<br>        <span class="hljs-built_in">Value</span>(m_context, String::<span class="hljs-built_in">createExpectingAscii</span>(methodId)),<br>        Value::<span class="hljs-built_in">fromDynamic</span>(m_context, std::<span class="hljs-built_in">move</span>(arguments))<br>      &#125;);<br>    &#125; <span class="hljs-built_in"><span class="hljs-keyword">catch</span></span> (...) &#123;<br>      std::<span class="hljs-built_in">throw_with_nested</span>(<br>        std::<span class="hljs-built_in">runtime_error</span>(<span class="hljs-string">&quot;Error calling function: &quot;</span> + moduleId + <span class="hljs-string">&quot;:&quot;</span> + methodId));<br>    &#125;<br>  &#125;();<br>    <span class="hljs-comment">//调用 native 模块，暂时忽略，下一小节解释，这里重点关注 Java 调用 JS 通信</span><br>  <span class="hljs-built_in">callNativeModules</span>(std::<span class="hljs-built_in">move</span>(result));<br>&#125;<br></code></pre></div></td></tr></table></figure>
+
+
+
+<h2 id="JavaScript调用Java"><a href="#JavaScript调用Java" class="headerlink" title="JavaScript调用Java"></a>JavaScript调用Java</h2><h3 id="Sample"><a href="#Sample" class="headerlink" title="Sample"></a><img src="https://cdn.nlark.com/yuque/0/2018/png/199077/1543751615410-914290d1-f1a8-44e0-89e3-26176a5fe11a.png" srcset="/img/loading.gif" lazyload alt="img">Sample</h3><figure class="highlight js"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs js"><span class="hljs-comment">//通过NativeModules拿到ToastAndroid</span><br><span class="hljs-keyword">import</span> &#123; NativeModules &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-native&#x27;</span>;<br><span class="hljs-built_in">module</span>.exports = NativeModules.ToastAndroid;<br><br><span class="hljs-comment">//使用的地方在JS中相关逻辑处调用，官方文档标准</span><br><span class="hljs-keyword">import</span> ToastAndroid <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./ToastAndroid&#x27;</span>;<br>ToastAndroid.show(<span class="hljs-string">&#x27;Awesome&#x27;</span>, ToastAndroid.SHORT);<br></code></pre></div></td></tr></table></figure>
+
+
+
+<p><img src="file:///var/folders/v0/8dgsh1jd74qfkddq5pcp_znc0000gn/T/abnerworks.Typora/image-20181202165046268.png?lastModify=1543751522" srcset="/img/loading.gif" lazyload alt="img"></p>
+<figure class="highlight java"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs java"><span class="hljs-function">function <span class="hljs-title">genModule</span><span class="hljs-params">(config: ?ModuleConfig, moduleID: number)</span>: ?</span>&#123;name: string, <span class="hljs-keyword">module</span>?: Object&#125; &#123;<br>  ......<br>  <span class="hljs-comment">//通过JSC拿到C++中从Java端获取的Java的Module映射表包装配置类</span><br>  <span class="hljs-keyword">const</span> [moduleName, constants, methods, promiseMethods, syncMethods] = config;<br>  ......<br>  <span class="hljs-keyword">const</span> <span class="hljs-keyword">module</span> = &#123;&#125;;<br>  <span class="hljs-comment">//遍历构建module的属性方法</span><br>  methods &amp;&amp; methods.forEach((methodName, methodID) =&gt; &#123;<br>    <span class="hljs-keyword">const</span> isPromise = promiseMethods &amp;&amp; arrayContains(promiseMethods, methodID);<br>    <span class="hljs-keyword">const</span> isSync = syncMethods &amp;&amp; arrayContains(syncMethods, methodID);<br>    invariant(!isPromise || !isSync, <span class="hljs-string">&#x27;Cannot have a method that is both async and a sync hook&#x27;</span>);<br>    <span class="hljs-keyword">const</span> methodType = isPromise ? <span class="hljs-string">&#x27;promise&#x27;</span> : isSync ? <span class="hljs-string">&#x27;sync&#x27;</span> : <span class="hljs-string">&#x27;async&#x27;</span>;<br>    <span class="hljs-comment">//生成Module的函数方法</span><br>    <span class="hljs-keyword">module</span>[methodName] = genMethod(moduleID, methodID, methodType);<br>  &#125;);<br>  Object.assign(<span class="hljs-keyword">module</span>, constants);<br>  ......<br>  <span class="hljs-comment">//返回一个</span><br>  <span class="hljs-keyword">return</span> &#123; name: moduleName, <span class="hljs-keyword">module</span> &#125;;<br>&#125;<br><br>enqueueNativeCall(moduleID: number, methodID: number, params: Array&lt;any&gt;, onFail: ?Function, onSucc: ?Function) &#123;<br>    ......<br>    <span class="hljs-keyword">this</span>._callID++;<br>    <span class="hljs-comment">//_queue是个队列，用于存放调用的模块、方法、参数信息</span><br>    <span class="hljs-comment">//把JS准备调用Java的模块名、方法名、调用参数放到数组里存起来</span><br>    <span class="hljs-keyword">this</span>._queue[MODULE_IDS].push(moduleID);<br>    <span class="hljs-keyword">this</span>._queue[METHOD_IDS].push(methodID);<br>    ......<br>    <span class="hljs-keyword">this</span>._queue[PARAMS].push(params);<br><br>    <span class="hljs-keyword">const</span> now = <span class="hljs-keyword">new</span> Date().getTime();<br>    <span class="hljs-comment">//如果5ms内有多个方法调用就先待在队列里防止过高频率，否则调用C++的nativeFlushQueueImmediate方法</span><br>    <span class="hljs-keyword">if</span> (global.nativeFlushQueueImmediate &amp;&amp;<br>        now - <span class="hljs-keyword">this</span>._lastFlush &gt;= MIN_TIME_BETWEEN_FLUSHES_MS) &#123;<br>      global.nativeFlushQueueImmediate(<span class="hljs-keyword">this</span>._queue);<br>      <span class="hljs-keyword">this</span>._queue = [[], [], [], <span class="hljs-keyword">this</span>._callID];<br>      <span class="hljs-keyword">this</span>._lastFlush = now;<br>    &#125;<br>    ......<br>&#125;<br></code></pre></div></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/React-Native/">React Native</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/React-Native/">React Native</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/11/02/block_chain/%E4%BB%80%E4%B9%88%E6%98%AF%E6%AF%94%E7%89%B9%E5%B8%81/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">什么是比特币</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/12/09/react_native/ReactNative%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/">
+                        <span class="hidden-mobile">ReactNative-启动流程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="twikoo"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/twikoo@1.3.1/dist/twikoo.all.min.js', function() {
+        var options = Object.assign(
+          {"envId":"stockbacken-4greka6u605b204e","region":"ap-guangzhou","path":"window.location.pathname"},
+          {
+            el: '#twikoo',
+            path: 'window.location.pathname'
+          }
+        )
+        twikoo.init(options)
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+    <!-- cnzz Analytics Icon -->
+    <span id="cnzz_stat_icon_1280076014" style="display: none"></span>
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.3/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js" ></script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
